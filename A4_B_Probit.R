@@ -13,9 +13,15 @@ library(pROC)
 df <- read.csv("E:\\Assignments_SCMA632\\Data\\NSSO68.csv")
 
 data = df
+
+unique(df$chicken_q)
 # Create the Target variable
 data$non_veg <- ifelse(rowSums(data[, c('eggsno_q', 'fishprawn_q', 'goatmeat_q', 'beef_q', 'pork_q','chicken_q', 'othrbirds_q')]) > 0, 1, 0)
 
+unique(data$non_veg)
+
+data$non_veg
+table(data$non_veg)
 
 # Get the value counts of non_veg
 non_veg_values <- data$non_veg
@@ -24,7 +30,7 @@ print(value_counts)
 
 # Define the dependent variable (non_veg) and independent variables
 y <- data$non_veg
-X <- data[,(names(data) %in% c("HH_type", "Religion", "Social_Group","Regular_salary_earner","Possess_ration_card","Sex","Age","Marital_Status","Education","Meals_At_Home","Region","hhdsz" ,"NIC_2008","NCO_2004"))]
+X <- data[,(names(data) %in% c("HH_type", "Religion", "Social_Group","Regular_salary_earner","Possess_ration_card","Sex","Age","Marital_Status","Education","Meals_At_Home","Region","hhdsz"))]
 
 str(X)
 # Ensure 'y' is a binary factor
@@ -37,7 +43,7 @@ X$Possess_ration_card = as.factor(X$Possess_ration_card)
 X$Sex = as.factor(X$Sex)
 X$Marital_Status = as.factor(X$Marital_Status)
 X$Education = as.factor(X$Education)
-X$Region = as.factor(X$Region)
+X$Religion = as.factor(X$Religion)
 
 
 # Create the combined data frame
@@ -48,11 +54,10 @@ str(combined_data)
 head(combined_data)
 combined_data$Age
 # Fit the model using glmnet with sparse matrix
-probit_model <- glm(y ~ hhdsz + NIC_2008 + NCO_2004 + HH_type + Religion + Social_Group+Regular_salary_earner+Region+Meals_At_Home+Education+Age+Sex+Possess_ration_card,data = combined_data, 
+probit_model <- glm(y ~ hhdsz + HH_type + Religion + Social_Group+Regular_salary_earner+Region+Meals_At_Home+Education+Age+Sex+Possess_ration_card,data = combined_data, 
                     family = binomial(link = "probit"),
                     control = list(maxit = 1000))
 data$hhdsz_scaled <- scale(data$hhdsz)
-data$NIC_2008_scaled <- scale(data$NIC_2008)
 
 
 # Print model summary or other relevant outputs
